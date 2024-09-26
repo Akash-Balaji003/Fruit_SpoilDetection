@@ -40,45 +40,46 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Sidebar */}
-      <div className="bg-maroon w-64 p-3 text-black flex flex-col justify-between" style={{backgroundColor: "#f4f1de"}}>
+    {/* Left Sidebar */}
+    <div className="bg-maroon w-64 p-3 text-black flex flex-col justify-between" style={{backgroundColor: "#f4f1de"}}>
         <div>
-          <h1 className="text-3xl font-bold">Inventory</h1>
+            <h1 className="text-3xl font-bold">Frutech</h1>
         </div>
 
         {/* Icon Container */}
         <div className="flex justify-left pb-1" onClick={()=> navigate("/")}>
-          <MdOutlineAccountCircle style={{ fontSize: 33 }} />
-          <h2 className="text-2xl font-light ml-2">Admin</h2>
+            <MdOutlineAccountCircle style={{ fontSize: 33 }} />
+            <h2 className="text-2xl font-light ml-2">Admin</h2>
         </div>
-      </div>
+    </div>
 
-      {/* Main Content */}
-      <div className="flex-grow bg-cover bg-center relative" style={{ backgroundImage: `url(${background})`, backgroundColor: 'rgba(0, 0, 0, 0.2)', /* Dark overlay color */
-          backgroundBlendMode: 'overlay' }}>
+    {/* Main Content */}
+    <div className="flex-grow bg-cover bg-center relative" style={{ backgroundImage: `url(${background})`, backgroundColor: 'rgba(0, 0, 0, 0.2)', /* Dark overlay color */
+        backgroundBlendMode: 'overlay' }}>
         <div className="bg-white bg-opacity-60 rounded-md mt-10 mx-10 p-6 shadow-lg">
-          <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-4">
+        <h2 className="text-2xl font-semibold ml-2">Inventory</h2>
             {/* Title Row */}
             <div className="flex p-4 rounded-md shadow-md" style={{backgroundColor: "#f4f1de"}}>
-              <div className="flex-1 font-bold">S.no</div>
-              <div className="flex-1 font-bold">Item</div>
-              <div className="flex-1 font-bold">Production Date</div>
-              <div className="flex-1 font-bold">Expiry Date</div>
+            <div className="flex-1 font-bold">S.no</div>
+            <div className="flex-1 font-bold">Item</div>
+            <div className="flex-1 font-bold">Production Date</div>
+            <div className="flex-1 font-bold">Expiry Date</div>
             </div>
 
             {/* Data Rows */}
             {items.map((item, index) => (
-              <div key={index} className="flex bg-gray-200 p-4 rounded-md shadow-md" style={{backgroundColor: "#FFFEF5"}}>
+            <div key={index} className="flex bg-gray-200 p-4 rounded-md shadow-md" style={{backgroundColor: "#FFFEF5"}}>
                 <div className="flex-1">{index + 1}</div>
                 <div className="flex-1">{item.item_name}</div>
                 <div className="flex-1">{item.Product_date}</div>
                 <div className="flex-1">{item.Expiry_date}</div>
-              </div>
+            </div>
             ))}
 
-          </div>
         </div>
-      </div>
+        </div>
+    </div>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import base64
 from datetime import date, timedelta
 import math
 from typing import List
@@ -40,6 +41,7 @@ class IoTData(BaseModel):
     co2_level: float
     fruit_name: str
 
+# Endpoint to get input data without image classification (Temporary)
 @app.post("/process_data")
 async def process_data(data: List[IoTData]):
     results = []
@@ -67,3 +69,28 @@ async def process_data(data: List[IoTData]):
 def show_info():
     fetched_data = Get_data()
     return {fetched_data}
+
+# Endpoint for getting input from IoT sensor
+class SensorData(BaseModel):
+    temperature: float
+    humidity: float
+    co2: int
+    image: str  # Base64-encoded image string
+
+@app.post("/data")
+async def receive_sensor_data(data: SensorData):
+    try:
+        # Log sensor readings
+        print(f"Temperature: {data.temperature}")
+        print(f"Humidity: {data.humidity}")
+        print(f"CO2: {data.co2}")
+
+        # Decode the base64-encoded image
+        image_data = base64.b64decode(data.image)
+
+        # Save the image
+
+        return {"message": "Data received successfully"}
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
