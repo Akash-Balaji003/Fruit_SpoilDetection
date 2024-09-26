@@ -48,7 +48,7 @@ def Get_data():
         if connection.is_connected():
             print('Connected to MySQL database')
 
-            # Create a cursor object using cursor() method
+            # Create a cursor object
             cursor = connection.cursor()
 
             # Query to get the latest record for each unique item_name
@@ -59,7 +59,9 @@ def Get_data():
                     SELECT item_name, MAX(Product_date) AS latest_product_date
                     FROM fruits_spoilage
                     GROUP BY item_name
-                ) latest_items ON fs.item_name = latest_items.item_name AND fs.Product_date = latest_items.latest_product_date;
+                ) latest_items 
+                ON fs.item_name = latest_items.item_name 
+                AND fs.Product_date = latest_items.latest_product_date;
             """
             cursor.execute(read_query)
             rows = cursor.fetchall()
@@ -82,20 +84,17 @@ def Get_data():
                 }
                 json_data.append(data)
 
-            # Convert Python list to JSON string
-            json_string = json.dumps(json_data, indent=2)
-            print(json_string)
+            # Return Python list as JSON
+            return json_data
 
     except mysql.connector.Error as error:
-        print(f"Error updating record: {error}")
+        print(f"Error retrieving records: {error}")
+        return {"error": str(error)}
 
     finally:
         # Close cursor and connection
         if 'cursor' in locals():
-            cursor.fetchall()
             cursor.close()
         if 'connection' in locals() and connection.is_connected():
             connection.close()
             print("MySQL connection closed")
-
-    return json_string

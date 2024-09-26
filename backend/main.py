@@ -1,5 +1,5 @@
-import base64
 from datetime import date, timedelta
+from gc import get_debug
 import math
 from typing import List
 from fastapi import FastAPI, HTTPException
@@ -67,30 +67,8 @@ async def process_data(data: List[IoTData]):
 
 @app.get("/get_data")
 def show_info():
-    fetched_data = Get_data()
-    return {fetched_data}
-
-# Endpoint for getting input from IoT sensor
-class SensorData(BaseModel):
-    temperature: float
-    humidity: float
-    co2: int
-    image: str  # Base64-encoded image string
-
-@app.post("/data")
-async def receive_sensor_data(data: SensorData):
     try:
-        # Log sensor readings
-        print(f"Temperature: {data.temperature}")
-        print(f"Humidity: {data.humidity}")
-        print(f"CO2: {data.co2}")
-
-        # Decode the base64-encoded image
-        image_data = base64.b64decode(data.image)
-
-        # Save the image
-
-        return {"message": "Data received successfully"}
-
+        fetched_data = Get_data()
+        return fetched_data  # No need for curly braces, just return the data directly
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))

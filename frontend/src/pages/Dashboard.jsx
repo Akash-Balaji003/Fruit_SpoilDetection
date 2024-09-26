@@ -16,27 +16,25 @@ function Dashboard() {
       try {
         // Replace with your API URL
         const response = await fetch('https://hchjn6x7-8000.inc1.devtunnels.ms/get_data');
-        
+  
         // Check if response is ok
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-
+  
         // Extract data
-        const responseData = await response.json();
-        
-        // Assuming responseData is in the format mentioned
-        const jsonString = responseData[0]; // Extracting the string from array
-        const data = JSON.parse(jsonString); // Parsing JSON string into an object
-
-        setItems(data); // Setting state with parsed data
+        const data = await response.json();  // No need for extra JSON.parse step
+  
+        // Assuming responseData is a list of dictionaries
+        setItems(data); // Setting state with the parsed data
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
-
+  
     fetchData();
   }, []); // Empty dependency array means this effect runs once when the component mounts
+  
 
   return (
     <div className="min-h-screen flex">
