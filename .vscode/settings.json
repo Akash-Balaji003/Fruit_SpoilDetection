@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./backend/models",
+        "./backend/models/codes"
+    ]
+}
