@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn import svm, preprocessing, model_selection, metrics, base
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "1"
 import tensorflow as tf
 import cv2
 
@@ -200,4 +201,4 @@ sns.heatmap(conf_matrix, annot=True)  # Visualize the confusion matrix
 plt.show()
 
 # Save the trained model to a file
-model.save('backend/models/trained_fruit_model_v4.h5')
+model.save('backend/models/fruit_Model_v4_1.h5')
