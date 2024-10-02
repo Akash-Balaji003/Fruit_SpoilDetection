@@ -9,31 +9,31 @@ function Dashboard() {
   const [items, setItems] = useState([]);
   const navigate = useNavigate();
 
-
   useEffect(() => {
-    // Fetch data from API
+    // Function to fetch data
     const fetchData = async () => {
       try {
-        // Replace with your API URL
-        const response = await fetch('https://hchjn6x7-8000.inc1.devtunnels.ms/get_data');
-  
-        // Check if response is ok
+        const response = await fetch('http://127.0.0.1:8000/get_data');
+
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-  
-        // Extract data
-        const data = await response.json();  // No need for extra JSON.parse step
-  
-        // Assuming responseData is a list of dictionaries
-        setItems(data); // Setting state with the parsed data
+
+        const data = await response.json();
+        setItems(data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
-  
+
+    // Fetch data initially when component mounts
     fetchData();
-  }, []); // Empty dependency array means this effect runs once when the component mounts
+
+    const intervalId = setInterval(fetchData, 30000);
+
+    // Clean up the interval when component unmounts
+    return () => clearInterval(intervalId);
+  }, []);
   
 
   return (
