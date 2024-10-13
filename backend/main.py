@@ -1,3 +1,4 @@
+import base64
 from datetime import date, timedelta
 from gc import get_debug
 from io import BytesIO
@@ -10,7 +11,7 @@ import numpy as np
 import tensorflow as tf
 import joblib
 
-from DB_interface import Get_data, insert_data
+from DB_interface import Get_data, get_fruit_records, insert_data, insert_data_v2, update_expiry_date
 
 app = FastAPI()
 
@@ -90,7 +91,7 @@ def predict_days_to_spoil(fruit_name, temperature, humidity, co2_level):
 
     return predicted_days[0]
 
-class IoTData(BaseModel):
+class IoTDataold(BaseModel):
     temperature: float
     humidity: float
     co2_level: float
@@ -98,7 +99,7 @@ class IoTData(BaseModel):
 
 # Endpoint to get input data without image classification (Temporary)
 @app.post("/process_data")
-async def process_data(data: List[IoTData]):
+async def process_data(data: List[IoTDataold]):
     results = []
     today_date = date.today()
 
@@ -161,5 +162,100 @@ async def process_data_with_image(
         return result
     
     
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/test")
+def show_info():
+    return {"Message":"This API can be accessed by anyone"} 
+
+# Define the request body using Pydantic model
+class DataWithBase64Image(BaseModel):
+    temperature: float
+    humidity: float
+    co2_level: float
+    image_base64: str
+
+@app.post("/process_data_final_v2")
+async def process_data_with_base64_image(data: DataWithBase64Image):
+    results = []
+
+    try:
+        # Decode the base64 image
+        image_data = base64.b64decode(data.image_base64)
+        image_pil = Image.open(BytesIO(image_data))
+
+        # Classify the fruit from the image
+        fruit_name = classify_fruit(image_pil)
+
+        # Predict days to spoil
+        predicted_days = predict_days_to_spoil(fruit_name, data.temperature, data.humidity, data.co2_level)
+
+        today_date = date.today()
+        expiry_date = today_date + timedelta(days=predicted_days)
+
+        result = {
+            "Item_name": fruit_name,
+            "Production_date": today_date,
+            "Expiry_date": expiry_date
+        }
+        results.append(result)
+        return result
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+class IoTData(BaseModel):
+    temperature: float
+    humidity: float
+    co2_level: float
+
+
+
+# Fianl version_1
+@app.post("/process_data_without_fruit_name")
+async def process_data_without_fruit(data: IoTData):
+    try:
+        # Fetch all fruits
+        fruit_records = get_fruit_records()
+
+        if not fruit_records:
+            raise HTTPException(status_code=404, detail="No fruit records found")
+
+        today_date = date.today()
+
+        for fruit in fruit_records:
+            fruit_name = fruit['item_name']
+            fruit_id = fruit['item_id']
+
+            # Predict the number of days until spoilage for this fruit
+            predicted_days = predict_days_to_spoil(fruit_name, data.temperature, data.humidity, data.co2_level)
+
+            # Calculate the expiry date
+            expiry_date = today_date + timedelta(days=predicted_days)
+
+            # Update the expiry date for the respective fruit in the database
+            update_expiry_date(fruit_id, expiry_date)
+
+        return {"message": "Expiry dates updated successfully for all fruits"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+
+
+class Item(BaseModel):
+    name: str
+    quantity: float
+    
+@app.post("/initial_storage")
+async def submit_items(items: List[Item]):
+    data = [{"name": item.name, "quantity": item.quantity} for item in items]
+    try:
+        insert_data_v2(data)
+        return {"message": "Items successfully inserted into the database"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
