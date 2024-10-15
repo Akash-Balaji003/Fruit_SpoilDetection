@@ -34,7 +34,7 @@ function Storage() {
                 // Log the data being sent
                 console.log('Submitting items:', items);
                 
-                const response = await fetch('https://hchjn6x7-8000.inc1.devtunnels.ms/initial_storage', {
+                const response = await fetch('http://127.0.0.1:8000/initial_storage', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
