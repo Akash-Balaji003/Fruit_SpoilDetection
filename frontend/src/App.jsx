@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Dashboard from './pages/Dashboard';
-import Login from './pages/login';
+import Login from 'frontend/src/pages/Login.jsx';
 import Storage from './pages/Storage';
 
 function App() {
