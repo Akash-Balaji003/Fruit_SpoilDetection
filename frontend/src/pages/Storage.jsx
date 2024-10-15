@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineAccountCircle } from "react-icons/md";
+
 import background from '/Users/akashbalaji/Desktop/Fruit_SpoilDetection/frontend/src/assets/BG_random2.png';
 
 function Storage() {

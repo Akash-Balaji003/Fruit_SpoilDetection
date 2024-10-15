@@ -1,18 +1,12 @@
-import base64
-from datetime import date, timedelta
-from gc import get_debug
-from io import BytesIO
-from PIL import Image
-from typing import List
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 import pandas as pd
-from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware
-import numpy as np
-import tensorflow as tf
 import joblib
 
-from DB_interface import Get_data, get_fruit_records, insert_data_v2, update_expiry_date
+from datetime import date, timedelta
+from typing import List
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+from DB_interface import Get_data, get_fruit_records, insert_data, update_expiry_date
 
 app = FastAPI()
 
@@ -24,6 +18,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# To predict the expiry date of the fruits
 def predict_days_to_spoil(fruit_name, temperature, humidity, co2_level):
     lr_algo, ct = joblib.load('/Users/akashbalaji/Desktop/Fruit_SpoilDetection/backend/models/trained_fruit_spoil_model_v3.pkl') # Model with oneDAL
     # Transform the input data
@@ -37,8 +32,12 @@ def predict_days_to_spoil(fruit_name, temperature, humidity, co2_level):
 
     return predicted_days[0]
 
+# To predict manure yield for the spoiled fruits
 def predict_manure_for_methods(fruit_name, waste_weight):
+
+    # Load the Model
     manure_model = joblib.load('/Users/akashbalaji/Desktop/Fruit_SpoilDetection/backend/models/Manure_v4.pkl')
+
     # Load manure dataset (or relevant column data)
     manure_data = pd.read_csv('/Users/akashbalaji/Desktop/Fruit_SpoilDetection/backend/datasets/synthetic_fruit_decomposition_data_1000.csv')  # Using the synthetic dataset
 
@@ -72,12 +71,13 @@ def predict_manure_for_methods(fruit_name, waste_weight):
 
     return results
 
-class poster(BaseModel):
+
+class manure(BaseModel):
     fruit_name: str
     weight: float
 
-@app.post("/poster")
-async def poster(data: poster):
+@app.post("/manure")
+async def poster(data: manure):
     pred = predict_manure_for_methods(data.fruit_name, data.weight)
     return pred
 
@@ -94,7 +94,6 @@ class IoTData(BaseModel):
     humidity: float
     co2_level: float
 
-# Final version_1
 @app.post("/process_data_without_fruit_name")
 async def process_data_without_fruit(data: IoTData):
     try:
@@ -132,7 +131,7 @@ class Item(BaseModel):
 async def submit_items(items: List[Item]):
     data = [{"name": item.name, "quantity": item.quantity} for item in items]
     try:
-        insert_data_v2(data)
+        insert_data(data)
         return {"message": "Items successfully inserted into the database"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

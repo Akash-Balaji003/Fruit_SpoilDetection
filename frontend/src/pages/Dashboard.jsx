@@ -63,7 +63,7 @@ function Dashboard() {
 
         // Clean up the interval when component unmounts
         return () => clearInterval(intervalId);
-    }, []); // Only run once on component mount, no dependencies
+    }, []);
 
     // Function to calculate the number of days left
     const calculateDaysLeft = (prodDate, expiryDate) => {
@@ -88,6 +88,7 @@ function Dashboard() {
     };
 
     const handleCheck = async (item) => {
+
         // Ensure that weight is defined and a valid number
         if (!item.Quantity || isNaN(item.Quantity)) {
         console.error('Invalid weight:', item.Quantity);
@@ -95,12 +96,12 @@ function Dashboard() {
         }
     
         const payload = {
-        fruit_name: item.item_name,  // Should be a string
-        weight: parseFloat(item.Quantity)  // Ensure this is a number
+        fruit_name: item.item_name,
+        weight: parseFloat(item.Quantity)
         };
     
         try {
-        const response = await fetch('http://127.0.0.1:8000/poster', {
+        const response = await fetch('http://127.0.0.1:8000/manure', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',

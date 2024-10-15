@@ -1,12 +1,9 @@
+import mysql.connector
+
 from datetime import date, datetime
 from typing import Union, List, Dict
-from fastapi import HTTPException
-import joblib
-import mysql.connector
-import json
 
-import pandas as pd
-
+# To get fruit names and ids
 def get_fruit_records():
     # Create the connection to the MySQL database
     try:
@@ -40,6 +37,7 @@ def get_fruit_records():
             connection.close()
             print("MySQL connection closed")
 
+# To update the expiry date for the fruits
 def update_expiry_date(fruit_id, expiry_date):
     # Create the connection to the MySQL database
     try:
@@ -72,7 +70,8 @@ def update_expiry_date(fruit_id, expiry_date):
             connection.close()
             print("MySQL connection closed")
 
-def insert_data_v2(data: Union[List[Dict], Dict]):
+# To insert initial data from user
+def insert_data(data: Union[List[Dict], Dict]):
     insert_cmd = "INSERT INTO fruits_spoilage (item_name, Product_date, Quantity) VALUES (%s, %s, %s);"
     
     try:
@@ -121,6 +120,7 @@ def insert_data_v2(data: Union[List[Dict], Dict]):
             connection.close()
             print("MySQL connection closed")
 
+# To send data to frontend
 def Get_data():
     try:
         connection = mysql.connector.connect(
